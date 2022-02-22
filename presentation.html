@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="TROUT1   Zhixin &amp; Sam &amp; Josh" />
+  <meta name="dcterms.date" content="2022-02-22" />
+  <title>How Various Factors Affect Housing Prices in London</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="presentation_files/reveal.js-3.3.0.1/css/reveal.css"/>
+
+
+
+<link rel="stylesheet" href="presentation_files/reveal.js-3.3.0.1/css/theme/simple.css" id="theme">
+
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+
+<!-- Printing and PDF exports -->
+<script id="paper-css" type="application/dynamic-css">
+
+/* Default Print Stylesheet Template
+   by Rob Glazebrook of CSSnewbie.com
+   Last Updated: June 4, 2008
+
+   Feel free (nay, compelled) to edit, append, and
+   manipulate this file as you see fit. */
+
+
+@media print {
+
+	/* SECTION 1: Set default width, margin, float, and
+	   background. This prevents elements from extending
+	   beyond the edge of the printed page, and prevents
+	   unnecessary background images from printing */
+	html {
+		background: #fff;
+		width: auto;
+		height: auto;
+		overflow: visible;
+	}
+	body {
+		background: #fff;
+		font-size: 20pt;
+		width: auto;
+		height: auto;
+		border: 0;
+		margin: 0 5%;
+		padding: 0;
+		overflow: visible;
+		float: none !important;
+	}
+
+	/* SECTION 2: Remove any elements not needed in print.
+	   This would include navigation, ads, sidebars, etc. */
+	.nestedarrow,
+	.controls,
+	.fork-reveal,
+	.share-reveal,
+	.state-background,
+	.reveal .progress,
+	.reveal .backgrounds {
+		display: none !important;
+	}
+
+	/* SECTION 3: Set body font face, size, and color.
+	   Consider using a serif font for readability. */
+	body, p, td, li, div {
+		font-size: 20pt!important;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		color: #000;
+	}
+
+	/* SECTION 4: Set heading font face, sizes, and color.
+	   Differentiate your headings from your body text.
+	   Perhaps use a large sans-serif for distinction. */
+	h1,h2,h3,h4,h5,h6 {
+		color: #000!important;
+		height: auto;
+		line-height: normal;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		text-shadow: 0 0 0 #000 !important;
+		text-align: left;
+		letter-spacing: normal;
+	}
+	/* Need to reduce the size of the fonts for printing */
+	h1 { font-size: 28pt !important;  }
+	h2 { font-size: 24pt !important; }
+	h3 { font-size: 22pt !important; }
+	h4 { font-size: 22pt !important; font-variant: small-caps; }
+	h5 { font-size: 21pt !important; }
+	h6 { font-size: 20pt !important; font-style: italic; }
+
+	/* SECTION 5: Make hyperlinks more usable.
+	   Ensure links are underlined, and consider appending
+	   the URL to the end of the link for usability. */
+	a:link,
+	a:visited {
+		color: #000 !important;
+		font-weight: bold;
+		text-decoration: underline;
+	}
+	/*
+	.reveal a:link:after,
+	.reveal a:visited:after {
+		content: " (" attr(href) ") ";
+		color: #222 !important;
+		font-size: 90%;
+	}
+	*/
+
+
+	/* SECTION 6: more reveal.js specific additions by @skypanther */
+	ul, ol, div, p {
+		visibility: visible;
+		position: static;
+		width: auto;
+		height: auto;
+		display: block;
+		overflow: visible;
+		margin: 0;
+		text-align: left !important;
+	}
+	.reveal pre,
+	.reveal table {
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.reveal pre code {
+		padding: 20px;
+		border: 1px solid #ddd;
+	}
+	.reveal blockquote {
+		margin: 20px 0;
+	}
+	.reveal .slides {
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 0 !important;
+		zoom: 1 !important;
+
+		overflow: visible !important;
+		display: block !important;
+
+		text-align: left !important;
+		-webkit-perspective: none;
+		   -moz-perspective: none;
+		    -ms-perspective: none;
+		        perspective: none;
+
+		-webkit-perspective-origin: 50% 50%;
+		   -moz-perspective-origin: 50% 50%;
+		    -ms-perspective-origin: 50% 50%;
+		        perspective-origin: 50% 50%;
+	}
+	.reveal .slides section {
+		visibility: visible !important;
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+		display: block !important;
+		overflow: visible !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 60px 20px !important;
+		z-index: auto !important;
+
+		opacity: 1 !important;
+
+		page-break-after: always !important;
+
+		-webkit-transform-style: flat !important;
+		   -moz-transform-style: flat !important;
+		    -ms-transform-style: flat !important;
+		        transform-style: flat !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+
+		-webkit-transition: none !important;
+		   -moz-transition: none !important;
+		    -ms-transition: none !important;
+		        transition: none !important;
+	}
+	.reveal .slides section.stack {
+		padding: 0 !important;
+	}
+	.reveal section:last-of-type {
+		page-break-after: avoid !important;
+	}
+	.reveal section .fragment {
+		opacity: 1 !important;
+		visibility: visible !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+	}
+	.reveal section img {
+		display: block;
+		margin: 15px 0px;
+		background: rgba(255,255,255,1);
+		border: 1px solid #666;
+		box-shadow: none;
+	}
+
+	.reveal section small {
+		font-size: 0.8em;
+	}
+
+}  
+</script>
+
+
+<script id="pdf-css" type="application/dynamic-css">
+    
+/**
+ * This stylesheet is used to print reveal.js
+ * presentations to PDF.
+ *
+ * https://github.com/hakimel/reveal.js#pdf-export
+ */
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+
+body {
+	margin: 0 auto !important;
+	border: 0;
+	padding: 0;
+	float: none !important;
+	overflow: visible;
+}
+
+html {
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+/* Remove any elements not needed in print. */
+.nestedarrow,
+.reveal .controls,
+.reveal .progress,
+.reveal .playback,
+.reveal.overview,
+.fork-reveal,
+.share-reveal,
+.state-background {
+	display: none !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	text-shadow: 0 0 0 #000 !important;
+}
+
+.reveal pre code {
+	overflow: hidden !important;
+	font-family: Courier, 'Courier New', monospace !important;
+}
+
+ul, ol, div, p {
+	visibility: visible;
+	position: static;
+	width: auto;
+	height: auto;
+	display: block;
+	overflow: visible;
+	margin: auto;
+}
+.reveal {
+	width: auto !important;
+	height: auto !important;
+	overflow: hidden !important;
+}
+.reveal .slides {
+	position: static;
+	width: 100%;
+	height: auto;
+
+	left: auto;
+	top: auto;
+	margin: 0 !important;
+	padding: 0 !important;
+
+	overflow: visible;
+	display: block;
+
+	-webkit-perspective: none;
+	   -moz-perspective: none;
+	    -ms-perspective: none;
+	        perspective: none;
+
+	-webkit-perspective-origin: 50% 50%; /* there isn't a none/auto value but 50-50 is the default */
+	   -moz-perspective-origin: 50% 50%;
+	    -ms-perspective-origin: 50% 50%;
+	        perspective-origin: 50% 50%;
+}
+
+.reveal .slides section {
+	page-break-after: always !important;
+
+	visibility: visible !important;
+	position: relative !important;
+	display: block !important;
+	position: relative !important;
+
+	margin: 0 !important;
+	padding: 0 !important;
+	box-sizing: border-box !important;
+	min-height: 1px;
+
+	opacity: 1 !important;
+
+	-webkit-transform-style: flat !important;
+	   -moz-transform-style: flat !important;
+	    -ms-transform-style: flat !important;
+	        transform-style: flat !important;
+
+	-webkit-transform: none !important;
+	   -moz-transform: none !important;
+	    -ms-transform: none !important;
+	        transform: none !important;
+}
+
+.reveal section.stack {
+	margin: 0 !important;
+	padding: 0 !important;
+	page-break-after: avoid !important;
+	height: auto !important;
+	min-height: auto !important;
+}
+
+.reveal img {
+	box-shadow: none;
+}
+
+.reveal .roll {
+	overflow: visible;
+	line-height: 1em;
+}
+
+/* Slide backgrounds are placed inside of their slide when exporting to PDF */
+.reveal section .slide-background {
+	display: block !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: -1;
+}
+
+/* All elements should be above the slide-background */
+.reveal section>* {
+	position: relative;
+	z-index: 1;
+}
+
+/* Display slide speaker notes when 'showNotes' is enabled */
+.reveal .speaker-notes-pdf {
+	display: block;
+	width: 100%;
+	max-height: none;
+	left: auto;
+	top: auto;
+	z-index: 100;
+}
+
+/* Display slide numbers when 'slideNumber' is enabled */
+.reveal .slide-number-pdf {
+	display: block;
+	position: absolute;
+	font-size: 14px;
+}
+
+</script>
+
+
+<script>
+var style = document.createElement( 'style' );
+style.type = 'text/css';
+var style_script_id = window.location.search.match( /print-pdf/gi ) ? 'pdf-css' : 'paper-css';
+var style_script = document.getElementById(style_script_id).text;
+style.innerHTML = style_script;
+document.getElementsByTagName('head')[0].appendChild(style);
+</script>
+
+    <script src="presentation_files/header-attrs-2.11/header-attrs.js"></script>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">How Various Factors Affect Housing Prices in London</h1>
+  <h1 class="subtitle"><font size='6'></font></h1>
+    <h2 class="author"><font size='8'>TROUT1 <br> Zhixin &amp; Sam &amp; Josh</font></h2>
+    <h3 class="date"><font size = '6'>2022-02-22</font></h3>
+</section>
+
+<section id="project-goal" class="title-slide slide level1">
+<h1>Project Goal</h1>
+<p>In this project we will explore how factors such as: Location, House type, Area and Number of Bedrooms influence the price of property in London. The goal of this project is to use this information to identify which factors have the greatest influence on the price of housing.</p>
+</section>
+
+<section>
+<section id="about-the-data" class="title-slide slide level1">
+<h1>About the Data</h1>
+<p><font size = '6'>The dataset we used was obtained from Kaggle. According to the uploader the information was obtained via web scraping. Below is what the original data looks like.</font></p>
+<pre><code>## Rows: 3,480
+## Columns: 11
+## $ X                 &lt;int&gt; 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15…
+## $ Property.Name     &lt;chr&gt; &quot;Queens Road&quot;, &quot;Seward Street&quot;, &quot;Hotham Road&quot;, &quot;Fest…
+## $ Price             &lt;int&gt; 1675000, 650000, 735000, 1765000, 675000, 420000, 14…
+## $ House.Type        &lt;chr&gt; &quot;House&quot;, &quot;Flat / Apartment&quot;, &quot;Flat / Apartment&quot;, &quot;Ho…
+## $ Area.in.sq.ft     &lt;int&gt; 2716, 814, 761, 1986, 700, 403, 1548, 560, 1308, 646…
+## $ No..of.Bedrooms   &lt;int&gt; 5, 2, 2, 4, 2, 1, 4, 1, 3, 2, 6, 6, 5, 2, 2, 6, 3, 6…
+## $ No..of.Bathrooms  &lt;int&gt; 5, 2, 2, 4, 2, 1, 4, 1, 3, 2, 6, 6, 5, 2, 2, 6, 3, 6…
+## $ No..of.Receptions &lt;int&gt; 5, 2, 2, 4, 2, 1, 4, 1, 3, 2, 6, 6, 5, 2, 2, 6, 3, 6…
+## $ Location          &lt;chr&gt; &quot;Wimbledon&quot;, &quot;Clerkenwell&quot;, &quot;Putney&quot;, &quot;Putney&quot;, &quot;Put…
+## $ City.County       &lt;chr&gt; &quot;London&quot;, &quot;London&quot;, &quot;London&quot;, &quot;London&quot;, &quot;London&quot;, &quot;L…
+## $ Postal.Code       &lt;chr&gt; &quot;SW19 8NY&quot;, &quot;EC1V 3PA&quot;, &quot;SW15 1QL&quot;, &quot;SW15 1LP&quot;, &quot;SW1…</code></pre>
+</section>
+<section id="problems" class="slide level2">
+<h2>Problems</h2>
+<p><font size = '6'>There are some large problems with the dataset we need to fix before we begin our analysis.</font></p>
+<pre><code>## Rows: 3,480
+## Columns: 3
+## $ No..of.Bedrooms   &lt;int&gt; 5, 2, 2, 4, 2, 1, 4, 1, 3, 2, 6, 6, 5, 2, 2, 6, 3, 6…
+## $ No..of.Bathrooms  &lt;int&gt; 5, 2, 2, 4, 2, 1, 4, 1, 3, 2, 6, 6, 5, 2, 2, 6, 3, 6…
+## $ No..of.Receptions &lt;int&gt; 5, 2, 2, 4, 2, 1, 4, 1, 3, 2, 6, 6, 5, 2, 2, 6, 3, 6…</code></pre>
+<p><font size = '6'>As you can see, ‘No. of Bedrooms’, ‘No. of Bathrooms’ and ‘No. of Receptions’ are the same as each other in each record. By looking up some of the listings we determined that this number represents the ‘No. of Bedrooms’</font></p>
+</section>
+<section id="problems-1" class="slide level2">
+<h2>Problems</h2>
+<pre><code>## Rows: 3,480
+## Columns: 1
+## $ City.County &lt;chr&gt; &quot;London&quot;, &quot;London&quot;, &quot;London&quot;, &quot;London&quot;, &quot;London&quot;, &quot;London&quot;…</code></pre>
+<pre><code>## [1] 962</code></pre>
+<p><font size = '6'>We can also see that this dataset contains houses from outside the City of London and that the Location variable does not have entries for 962 of the 3480 listings.</font></p>
+</section>
+<section id="cleaning" class="slide level2">
+<h2>Cleaning</h2>
+<p><font size = '6'>- So we cleaned the dataset by: 1. Filtering out all houses that are not in London. 2. Removing the variables “No. of bathrooms” and “No. of receptions.”<sup>2</sup> 3. Creating variable: “price_per_sq_ft” = “Price”/“Area in sq ft” 4. Extracting the District Code from the “Postal Code” variable.<sup>3</sup> 5. Assigning each District code to one of the 4 large regions.<sup>4</sup></p>
+<p>Next we will expand on how we assigned each property to one of 4 large regions</font></p>
+</section>
+<section id="discription-citation" class="slide level2">
+<h2>Discription &amp; Citation</h2>
+<ul>
+<li>All code for tidying the data can be found in r script “presentation/presentation_files/Support-files/Tidy Up Data.R”</li>
+</ul>
+<h1 style="
+font-size: 16pt; 
+width: 100%; 
+text-align: center
+;">
+<ol type="1">
+<li>Kulkarni, A., 2021. Housing Prices in London. [online] Kaggle.com. <a href="https://www.kaggle.com/arnavkulkarni/housing-prices-in-london" class="uri">https://www.kaggle.com/arnavkulkarni/housing-prices-in-london</a> [Accessed 19 November 2021].</li>
+<li>Because of the flaw of the original data, the variable “No. of bedrooms”, “No. of bathrooms”, and "No. of receptions are all the same for each observation. We checked some famous houses and figured out that this number represents the number of bedrooms.</li>
+<li>District Code is always the first two to four characters in postal code. i.e: SW9X 9BT has District Code of SW9. This code indicates which region does the house locate.</li>
+<li>The standard of dividing regions are shown at next page.</li>
+</ol>
+</h1>
+</section></section>
+<section>
+<section id="the-closer-the-better" class="title-slide slide level1">
+<h1>The Closer, the Better?</h1>
+<p>We have chosen to divide the District codes into 4 regions shown on the map below</p>
+<ul>
+<li>Different marked colour represents different regions:</li>
+</ul>
+<ol type="1">
+<li>Red represents group “A-Central”</li>
+<li>Blue represents group “B-Middle”</li>
+<li>Red represents group “C-Outer”</li>
+<li>Unmarked region represents group “D-Further outer”</li>
+</ol>
+</section>
+<section id="deviding-rule-image" class="slide level2">
+<h2>Deviding Rule Image</h2>
+<p><img src="presentation/presentation_files/Support-files/London_Region_divide.png"  height="500" width="500"></p>
+<ul>
+<li>What we expected is that: The closer to the city center, the more expensive the house is. That is, higher price per sq ft.</li>
+</ul>
+</section>
+<section id="general-glimpse" class="slide level2">
+<h2>General Glimpse</h2>
+<p><img src="presentation_files/figure-revealjs/London%20Histrogram-1.png" width="80%" /></p>
+</section>
+<section id="datainterpretation" class="slide level2">
+<h2>Data&amp;Interpretation</h2>
+<pre><code>## # A tibble: 4 × 5
+##   large_region    `Mean Price` `1/4 Quantile` `Median Price` `3/4 Quantile`
+##   &lt;chr&gt;                  &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;
+## 1 A-Central              1487.           942.          1223.          1735.
+## 2 B-Middle               1212.           841.          1029.          1453.
+## 3 C-Outer                 868.           703.           809.           977.
+## 4 D-Further Outer         980.           744.           882.          1050.</code></pre>
+<p>Surprisingly, we found that the housing price per sq ft is not always decreasing when the region we are looking at is further and further from the city center. When we encounter “D-Further Outer” region, the price increase a little. This happens to mean, median, and quarter quantiles, which means the housing price per sq ft in “Further Outer” region is generally higher than the “Outer” region.</p>
+</section>
+<section id="mapinterpretation" class="slide level2">
+<h2>Map&amp;Interpretation</h2>
+<p><font size = '6'>- We are curious if there is a region in “Further Outer” that has a very high housing price per sq ft which is affecting our result. So we made a map to see the distribution of housing price.</font></p>
+<p><img src="presentation_files/figure-revealjs/map%20of%20London-1.png" width="80%" /></p>
+</section>
+<section id="mapinterpretation-1" class="slide level2">
+<h2>Map&amp;Interpretation</h2>
+<ul>
+<li>It seems that no such region exists. The housing price per sq ft in “Further outer” is higher than “Outer” region in general.</li>
+</ul>
+</section>
+<section id="prices-grouped-by-region-and-type-of-housing" class="slide level2">
+<h2>Prices grouped by region and type of housing</h2>
+<pre><code>## # A tibble: 6 × 4
+## # Groups:   House Type [3]
+##   `House Type`     large_region    `Area in sq ft`    Price
+##   &lt;chr&gt;            &lt;chr&gt;                     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 Flat / Apartment D-Further Outer            992. 1064751.
+## 2 House            D-Further Outer           2316. 2048030.
+## 3 New development  D-Further Outer           1369. 1535955.
+## 4 Flat / Apartment C-Outer                    888.  767305.
+## 5 House            C-Outer                   2236. 1826378.
+## 6 New development  C-Outer                   1325. 1608774.</code></pre>
+</section></section>
+<section>
+<section id="model-showing-correlation-between-price-and-area-over-all-large-regions" class="title-slide slide level1">
+<h1>Model showing correlation between price and area over all large regions</h1>
+<p><img src="presentation_files/figure-revealjs/data%20for%20housetype2-1.png" width="80%" /></p>
+</section>
+<section id="table-showing-correlation-between-area-and-price-over-all-large-regions" class="slide level2">
+<h2>Table showing correlation between Area and Price over all large regions</h2>
+<pre><code>## # A tibble: 1 × 12
+##   r.squared adj.r.squared    sigma statistic p.value    df  logLik    AIC    BIC
+##       &lt;dbl&gt;         &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1     0.575         0.575 1564528.     4020.       0     1 -46606. 93218. 93236.
+## # … with 3 more variables: deviance &lt;dbl&gt;, df.residual &lt;int&gt;, nobs &lt;int&gt;</code></pre>
+</section>
+<section id="correlation-between-area-and-price-over-the-middle-region" class="slide level2">
+<h2>Correlation between Area and Price over the Middle region</h2>
+<p><img src="presentation_files/figure-revealjs/data%20for%20housetype4-1.png" width="80%" /></p>
+</section>
+<section id="table-showing-correlation-between-area-and-price-over-the-middle-region" class="slide level2">
+<h2>Table showing correlation between Area and Price over the Middle region</h2>
+<pre><code>## # A tibble: 1 × 12
+##   r.squared adj.r.squared  sigma statistic   p.value    df  logLik    AIC    BIC
+##       &lt;dbl&gt;         &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1     0.730         0.730 1.23e6     3024. 2.99e-320     1 -17290. 34585. 34600.
+## # … with 3 more variables: deviance &lt;dbl&gt;, df.residual &lt;int&gt;, nobs &lt;int&gt;</code></pre>
+</section>
+<section id="conclusion" class="slide level2">
+<h2>Conclusion</h2>
+<ul>
+<li><p>Generally as you move further from the center of London house prices decrease</p></li>
+<li><p>However our data tells us that on average homes in the further outer sector are more expensive then houses in the outer sector , this did not fit with the trend or our hypothesis.</p></li>
+<li><p>There is a simplistic linear relationship between area of a home and the price of a home .</p></li>
+</ul>
+</section>
+<section id="limitations-with-our-data" class="slide level2">
+<h2>Limitations with our data</h2>
+<ul>
+<li><p>The data set was poorly web scraped.</p></li>
+<li><p>The data set only contained observations from certain regions of London.</p></li>
+<li><p>The data set gave limited information on specifics of the properties for example if the houses were terrace, detached or semidetached. As well as if the homes came with any land or any amenities.</p></li>
+</ul>
+</section></section>
+<section id="section" class="title-slide slide level1">
+<h1></h1>
+<h2 class="r-fit-text">
+Infinite Progress
+</h2>
+</section>
+    </div>
+  </div>
+
+  <script src="presentation_files/reveal.js-3.3.0.1/lib/js/head.min.js"></script>
+  <script src="presentation_files/reveal.js-3.3.0.1/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: false,
+        // Transition style
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+        ]
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  </body>
+</html>

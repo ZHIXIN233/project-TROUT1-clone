@@ -1,0 +1,274 @@
+---
+title: "How Various Factors Affect Housing Prices in London"
+subtitle: <font size='6'></font>
+author: <font size='8'>TROUT1 <br> Zhixin & Sam & Josh</font>
+institute: <font size='10'>University of Edinburgh</font>
+date: <font size = '6'>`r Sys.Date()`</font>
+output:
+  revealjs::revealjs_presentation:
+    self_contained: false
+---
+
+```{r load-packages, include = FALSE}
+# Add any additional packages you need to this chunk
+library(rmarkdown)
+library(tidyverse)
+library(tidymodels)
+library(palmerpenguins)
+library(knitr)
+library(revealjs)
+library(tidyr)
+library(purrr)
+library(sf)
+library(leaflet)
+```
+
+```{r setup, include=FALSE}
+# For better figure resolution
+knitr::opts_chunk$set(fig.retina = 3, dpi = 300, fig.width = 6, fig.asp = 0.618, out.width = "80%")
+```
+
+```{r load-data, include=FALSE}
+London <- read_csv("data/Fixed-London.csv")
+London_map <- st_read("data/Map_templet/Fixed-London-Map.shp", stringsAsFactors = FALSE)
+Original_London <- read.csv("data/London.csv")
+#{data-background-image="img/confetti.jpg"}
+```
+
+# Project Goal
+In this project we will explore how factors such as: Location, House type, Area and Number of Bedrooms influence the price of property in London.
+The goal of this project is to use this information to identify which factors have the greatest influence on the price of housing. 
+
+# About the Data
+
+<font size = '6'>The dataset we used was obtained from Kaggle. According to the uploader the information was obtained via web scraping. Below is what the original data looks like.</font>
+
+```{r glimpse of data, echo=FALSE}
+glimpse(Original_London)
+```
+
+
+## Problems
+
+<font size = '6'>There are some large problems with the dataset we need to fix before we begin our analysis.</font>
+
+```{r glimpse of problem, echo=FALSE}
+glimpse(select(Original_London, c(6,7,8)))
+```
+
+<font size = '6'>As you can see, 'No. of Bedrooms', 'No. of Bathrooms' and 'No. of Receptions' are the same as each other in each record. By looking up some of the listings we determined that this number represents the 'No. of Bedrooms'</font> 
+
+## Problems
+
+```{r, glimpse of problem2, echo=FALSE}
+glimpse(select(Original_London, c(10)))
+
+nrow(filter(Original_London, Location == ""))
+```
+
+<font size = '6'>We can also see that this dataset contains houses from outside the City of London and that the Location variable does not have entries for 962 of the 3480 listings.</font> 
+
+## Cleaning
+
+<font size = '6'>- So we cleaned the dataset by:
+1. Filtering out all houses that are not in London.
+2. Removing the variables "No. of bathrooms" and "No. of receptions."^2^
+3. Creating variable: "price_per_sq_ft" = "Price"/"Area in sq ft"
+4. Extracting the District Code from the "Postal Code" variable.^3^
+5. Assigning each District code to one of the 4 large regions.^4^
+
+Next we will expand on how we assigned each property to one of 4 large regions</font> 
+
+## Discription & Citation
+
+- All code for tidying the data can be found in r script "presentation/presentation_files/Support-files/Tidy Up Data.R" 
+
+<h1 style="
+font-size: 16pt; 
+width: 100%; 
+text-align: center
+;">
+
+1. Kulkarni, A., 2021. Housing Prices in London. [online] Kaggle.com. <https://www.kaggle.com/arnavkulkarni/housing-prices-in-london> [Accessed 19 November 2021].
+2. Because of the flaw of the original data, the variable "No. of bedrooms", "No. of bathrooms", and "No. of receptions are all the same for each observation. We checked some famous houses and figured out that this number represents the number of bedrooms.
+3. District Code is always the first two to four characters in postal code. i.e: SW9X 9BT has District Code of SW9. This code indicates which region does the house locate.
+4. The standard of dividing regions are shown at next page.
+
+</h1>
+
+# The Closer, the Better?
+
+We have chosen to divide the District codes into 4 regions shown on the map below
+
+- Different marked colour represents different regions:
+1. Red represents group "A-Central"
+2. Blue represents group "B-Middle"
+3. Red represents group "C-Outer"
+4. Unmarked region represents group "D-Further outer"
+
+
+## Deviding Rule Image
+
+<img src="presentation/presentation_files/Support-files/London_Region_divide.png"  height="500" width="500">
+
+- What we expected is that: The closer to the city center, the more expensive the house is. That is, higher price per sq ft.
+
+## General Glimpse
+```{r London Histrogram, echo = FALSE, warning = FALSE, message = FALSE}
+pound <- label_dollar(
+  prefix = "£", 
+  suffix = "",
+  big.mark = ".",
+  decimal.mark = ","
+)
+London%>%
+  ggplot(aes(price_per_sq_ft))+
+  geom_histogram(binwidth = 100)+
+  facet_wrap(~ large_region, ncol = 1)+
+  scale_x_continuous(labels = pound)+
+  labs(
+    title = "Histogram for Price per sq ft in London",
+    subtitle = "Divided by large regions",
+    x = "Price per sq ft"
+  )
+```
+
+
+## Data&Interpretation
+
+```{r data interpretation, echo = FALSE, warning = FALSE, message = FALSE}
+London%>%
+  group_by(large_region)%>%
+  summarise(
+    `Mean Price` = mean(price_per_sq_ft, na.rm = TRUE),
+    `1/4 Quantile` = quantile(price_per_sq_ft, 0.25),
+    `Median Price` = median(price_per_sq_ft, na.rm = TRUE),
+    `3/4 Quantile` = quantile(price_per_sq_ft, 0.75),
+  )%>%
+  arrange(large_region)
+
+```
+
+Surprisingly, we found that the housing price per sq ft is not always decreasing when the region we are looking at is further and further from the city center. When we encounter "D-Further Outer" region, the price increase a little. This happens to mean, median, and quarter quantiles, which means the housing price per sq ft in "Further Outer" region is generally higher than the "Outer" region.
+
+
+## Map&Interpretation
+
+<font size = '6'>- We are curious if there is a region in "Further Outer" that has a very high housing price per sq ft which is affecting our result. So we made a map to see the distribution of housing price.</font>
+
+```{r map of London, echo = FALSE, warning = FALSE, message = FALSE}
+# This code chunk is power consuming
+# In case that this code does not work, uncomment the following code to generate back-up map
+
+# install.packages("png")
+# library(png)
+# pp <- readPNG("../presentation/presentation_files/Support-files/London-Price-Map.png")
+# plot.new() 
+# rasterImage(pp,0,0,1,1)
+
+London_map%>%
+  ggplot()+
+  geom_sf(aes(colour = mn_pr__))+
+  scale_colour_gradient(low = "blue", high = "red")+
+  labs(
+    title = "Mean Price per sq ft Map of London",
+    subtitle = "Gray parts are aera that are missing data",
+    color = "Mean Price per sq ft",
+    alt = "Map data from: https://data.london.gov.uk/dataset/ordnance-survey-code-point [Accessed on nov.30 2021]"
+  )
+```
+
+## Map&Interpretation
+
+- It seems that no such region exists. The housing price per sq ft in "Further outer" is higher than "Outer" region in general.
+
+
+## Prices grouped by region and type of housing 
+
+```{r data for housetype, echo = FALSE, warning = FALSE, message=FALSE}
+London %>%
+  filter(`House Type` %in% c("Flat / Apartment", "House", "New development" )) %>%
+  filter(large_region %in% c("D-Further Outer", "C-Outer")) %>%
+  group_by(`House Type`, large_region) %>%
+  summarise(
+    `Area in sq ft` = mean(`Area in sq ft`),
+    Price = mean(Price)
+  ) %>%
+  arrange(desc(large_region))
+```
+
+# Model showing correlation between price and area over all large regions
+
+```{r data for housetype2, echo = FALSE, warning = FALSE, message=FALSE}
+London %>%
+ggplot(aes(x = `Area in sq ft`, y = Price)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  labs(title = "Linear model of Area against Price") +
+  scale_y_continuous(labels = label_dollar(scale = 0.000001, suffix = "M"))
+
+```
+
+## Table showing correlation between Area and Price over all large regions 
+
+```{r data for housetype3, echo = FALSE, warning = FALSE, message=FALSE}
+
+Area_Price <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit( Price ~ `Area in sq ft` , data = London)
+
+glance(Area_Price)
+
+```
+
+
+## Correlation between Area and Price over the Middle region
+
+```{r data for housetype4, echo = FALSE, warning = FALSE, message=FALSE}
+London %>%
+  filter(large_region == "B-Middle") %>%
+ggplot(aes(x = `Area in sq ft`, y = Price)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +
+  labs(title = "Linear model of Area against Price in the Middle region") +
+  scale_y_continuous(labels = label_dollar(scale = 0.000001, suffix = "M"))
+
+```
+
+## Table showing correlation between Area and Price over the Middle region
+
+```{r data for housetype5, echo = FALSE, warning = FALSE, message=FALSE}
+Further_Outer <- London %>%
+  filter(large_region == "B-Middle")
+  
+Further_Outer1 <- linear_reg() %>%
+  set_engine("lm") %>%
+  fit( formula = Price ~ `Area in sq ft`, data = Further_Outer)
+  
+
+glance(Further_Outer1)
+
+```
+
+
+## Conclusion
+
+- Generally as you move further from the center of London house prices decrease  
+
+- However our data tells us that on average homes in the further outer sector are more expensive then houses in the outer sector , this did not fit with the trend or our hypothesis.
+
+- There is a simplistic linear relationship between area of a home and the price of a home . 
+
+
+
+## Limitations with our data
+
+- The data set was poorly web scraped.
+
+- The data set only contained observations from certain regions of London.  
+
+- The data set gave limited information on specifics of the properties for example if the houses were terrace, detached or semidetached. As well as if the homes came with any land or any amenities.
+
+
+# 
+<h2 class="r-fit-text">Infinite Progress</h2>
