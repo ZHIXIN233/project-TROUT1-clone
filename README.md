@@ -6,8 +6,10 @@ TROUT1 (Zhixin & Sam & Josh)
 # Clone Information
 
 This is a clone of project produced by TROUT1(@ZHIXIN233, @muirsam,
-@Josh892). Original project repository was kept by our professor and was
-private, and we create this clone project for others to view.
+@Josh892). The project was the final project of the Introduction to Data
+Science course of University of Edinburgh. Original project repository
+was kept by our professor and was private, and we create this clone
+project for others to view.
 
 # Summary
 
