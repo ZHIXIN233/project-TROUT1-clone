@@ -3,6 +3,12 @@ How Various Factors Affect Housing Prices in London
 TROUT1 (Zhixin & Sam & Josh)
 2 Dec. 2021
 
+# Clone Information
+
+This is a clone of project produced by TROUT1(@ZHIXIN233, @muirsam,
+@Josh892). Original project repository was kept by our professor and was
+private, and we create this clone project for others to view.
+
 # Summary
 
 ## Introduction:

@@ -5,6 +5,8 @@ date: "2 Dec. 2021"
 output: github_document
 ---
 
+# Clone Information
+This is a clone of project produced by TROUT1(@ZHIXIN233, @muirsam, @Josh892). Original project repository was kept by our professor and was private, and we create this clone project for others to view.
 
 # Summary
 
